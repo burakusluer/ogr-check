@@ -1,0 +1,15 @@
+{
+  "name": "ogr-check",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "esbuild assets/js/ogr_takip_table.ts --bundle --minify --outfile=assets/js/ogr_takip_table.min.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "esbuild": "^0.27.2"
+  }
+}

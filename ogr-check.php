@@ -6,20 +6,60 @@ Plugin URI: http://burakusluer.com.tr
 Description: Öğrenci yoklaması için eklenti
 Version: 1.0
 Author: Burak Usluer
-Requires at least: 7.2
+PHP version: 8.0
 Author URI: http://burakusluer.com.tr
 */
 
 class OgrenciYoklama
 {
-    private static $instance=null;
+    private static $instance = null;
 
     /**
      * singleton pattern kullanacağız bu sebeple kapattım hocam
      */
     private function __construct()
     {
+        add_shortcode("ogr-takip", [$this, "ogrTakipCallback"]);
+        add_action("wp_enqueue_scripts", [$this, "ogrTakipLoadAssets"]);
+    }
 
+    /**
+     * @return void
+     * css ,js assetleri load ediyor shortcode([ogr-takip]) varsa
+     */
+    public function ogrTakipLoadAssets()
+    {
+        if (shortcode_exists("ogr-takip")) {
+            $data['wp_nonce']=wp_create_nonce("ogr-here-action");
+            $data['users']=get_users([
+                'orderby' => ["ID", "ASC"]
+            ]);
+            wp_enqueue_script("ogrTakipTableJs", plugin_dir_url(__FILE__) . "/assets/css/ogr_takip_table.min.js");
+            wp_add_inline_script("ogrTakipTableJs",wp_json_encode($data),"after");
+            wp_enqueue_style("ogrTakipTableCss", plugin_dir_url(__FILE__) . "/assets/js/ogr_takip_table.css");
+        }
+    }
+
+    public function ogrTakipCallback()
+    {
+
+        ob_start();
+        ?>
+        <div class="ogr-takip-main">
+            <table class="ogr-takip-table" id="ogr-takip-table">
+                <thead>
+                <tr>
+                    <th>Öğrenci Adı</th>
+                    <th>Öğrenci Numarası</th>
+                    <th>Yoklama!</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <?php
+        return ob_get_clean();
     }
 
     /**
@@ -31,14 +71,16 @@ class OgrenciYoklama
 
     }
 
+
     /**
      * @return self|null
      * Tek nesne referansı singleton Pattern
      */
     public static function getInstance()
     {
-        self::$instance??= new self();
+        self::$instance ??= new self();
         return self::$instance;
     }
 }
+
 OgrenciYoklama::getInstance();
