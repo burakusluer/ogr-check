@@ -1,3 +1,9 @@
 #ogr-takip-table{
     border: 1px solid #d4d4d4;
+    background-color: #d3d3d3;
+    border-collapse: collapse;
+}
+#ogr-takip-table thead tr, #ogr-takip-table thead td{
+    border: 1px solid black;
+    text-align: center;
 }

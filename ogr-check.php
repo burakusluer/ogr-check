@@ -34,9 +34,9 @@ class OgrenciYoklama
             $data['users']=get_users([
                 'orderby' => ["ID", "ASC"]
             ]);
-            wp_enqueue_script("ogrTakipTableJs", plugin_dir_url(__FILE__) . "/assets/css/ogr_takip_table.min.js");
-            wp_add_inline_script("ogrTakipTableJs",wp_json_encode($data),"after");
-            wp_enqueue_style("ogrTakipTableCss", plugin_dir_url(__FILE__) . "/assets/js/ogr_takip_table.css");
+            wp_enqueue_script("ogrTakipTableJs", plugin_dir_url(__FILE__) . "/assets/js/ogr_takip_table.min.js");
+            wp_add_inline_script("ogrTakipTableJs",'const ogrTakipMainData='.wp_json_encode($data),"after");
+            wp_enqueue_style("ogrTakipTableCss", plugin_dir_url(__FILE__) . "/assets/css/ogr_takip_table.css");
         }
     }
 

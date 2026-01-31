@@ -4,6 +4,7 @@
   "description": "",
   "scripts": {
     "build": "esbuild assets/js/ogr_takip_table.ts --bundle --minify --outfile=assets/js/ogr_takip_table.min.js",
+    "start": "esbuild assets/js/ogr_takip_table.ts --bundle --minify --outfile=assets/js/ogr_takip_table.min.js --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
