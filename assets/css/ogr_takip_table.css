@@ -13,3 +13,12 @@
     border: 1px solid black;
     min-width: 50px;
 }
+#ogr-takip-table td{
+    cursor: pointer;
+}
+#ogr-takip-table td.apsent{
+    background-color: darkred;
+}
+#ogr-takip-table td.here{
+    background-color: darkgreen;
+}

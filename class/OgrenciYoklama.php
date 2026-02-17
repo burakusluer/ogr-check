@@ -41,6 +41,8 @@ class OgrenciYoklama
         attendance longtext NOT NULL,
         year smallint NOT NULL,
         month tinyint NOT NULL,
+        teacher longtext null,
+        reading longtext null,
         PRIMARY KEY  (id),
         UNIQUE KEY student_month (user_id,year,month)
     ) $charset;"
@@ -52,19 +54,22 @@ class OgrenciYoklama
             error_log("WordPress Aktivasyon Çıktısı: " . $output);
         }
     }
+
     /**
      * @return void
-     * ajax ile öğrencilerin burdayım ediği fonksiyon
+     * ajax ile öğrencilerin yoklama request i buraya geliyor
+     * nonce check(csrf) ve yetki denetlemeleri burada yapılıyor
      */
     public function ogrHereHandle()
     {
-        check_ajax_referer('ogr_here_action', 'nonce');
+        check_ajax_referer('ogr-here-action', 'nonce');
+
         if (get_current_user_id() == $_POST['userId']) {
             //user için yoklama alındı bilgisi işlenecek
-            wp_send_json_success(['status' => 'ok']);
+            wp_send_json_success(['status' => 'ok',]);
         } else {
             wp_send_json_error([
-                'message' => 'You are not Authorized'
+                'message' => 'You are not Authorized',
             ], 403);
         }
     }
@@ -75,15 +80,16 @@ class OgrenciYoklama
      */
     public function ogrTakipLoadAssets()
     {
+        global $wpdb;
+        $tableStudentsCheckList = "{$wpdb->prefix}students_check_list";
         if (shortcode_exists("ogr-takip")) {
             $data['wp_nonce'] = wp_create_nonce("ogr-here-action");
             $data['ajax_url'] = admin_url('admin-ajax.php');
-            $data['users'] = get_users([
-                'orderby' => ["ID", "ASC"]
-            ]);
-            wp_enqueue_script("ogrTakipTableJs", plugin_dir_url(__FILE__) . "/assets/js/ogr_takip_table.min.js");
-            wp_add_inline_script("ogrTakipTableJs", 'const ogrTakipMainData=' . wp_json_encode($data), "after");
-            wp_enqueue_style("ogrTakipTableCss", plugin_dir_url(__FILE__) . "/assets/css/ogr_takip_table.css");
+            $data['users'] = $wpdb->get_results("select users.ID,user_nicename,attendance,year,month from {$wpdb->users} as users  left outer join {$tableStudentsCheckList} as checklist on users.ID=checklist.user_id and year=year(curdate()) and month=month(curdate())");
+            $data['days'] = date('t');
+            wp_enqueue_script("ogrTakipTableJs", plugin_url . "/assets/js/ogr_takip_table.min.js");
+            wp_add_inline_script("ogrTakipTableJs", 'const ogrTakipMainData=' . wp_json_encode($data));
+            wp_enqueue_style("ogrTakipTableCss", plugin_url . "/assets/css/ogr_takip_table.css");
         }
     }
 
